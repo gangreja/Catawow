@@ -332,6 +332,12 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             recv_data >> msg;
             recv_data >> to;
 
+			if (msg.empty())
+                return;
+
+            if (ChatHandler(this).ParseCommands(msg.c_str()) > 0)
+                return;
+
             if (_player->getLevel() < sWorld.getIntConfig(CONFIG_CHAT_WHISPER_LEVEL_REQ))
             {
                 SendNotification(GetTrinityString(LANG_WHISPER_REQ), sWorld.getIntConfig(CONFIG_CHAT_WHISPER_LEVEL_REQ));
@@ -385,11 +391,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket & recv_data)
             std::string msg;
             recv_data >> msg;
 
-            if (msg.empty())
-                break;
+           if (msg.empty())
+                return;
 
             if (ChatHandler(this).ParseCommands(msg.c_str()) > 0)
-                break;
+                return;
 
             if (!processChatmessageFurtherAfterSecurityChecks(msg, lang))
                 return;
